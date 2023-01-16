@@ -1,2 +1,1 @@
 # curso-go
-# curso-go
