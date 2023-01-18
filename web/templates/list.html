@@ -1,0 +1,24 @@
+{{ define "context" }}
+<h1>Posts</h1>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {{ range $key, $value := . }}
+        <tr>
+            <td>{{$value.Id}}</td>
+            <td>{{$value.Title}}</td>
+            <td>{{$value.Created}}</td>
+            <td><a href="/{{$value.Id}}/view">View Post</a></td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>
+{{ end }}

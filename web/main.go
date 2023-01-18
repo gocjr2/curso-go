@@ -56,19 +56,20 @@ func getPostById(id string) *Post {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	t := template.Must(template.ParseFiles("templates/index.html"))
-	if err := t.ExecuteTemplate(w, "index.html", listPosts()); err != nil {
+	t := template.Must(template.ParseFiles("templates/layout/default.html", "templates/list.html"))
+	if err := t.ExecuteTemplate(w, "default.html", listPosts()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	t := template.Must(template.ParseFiles("templates/view.html"))
-	if err := t.ExecuteTemplate(w, "view.html", getPostById(id)); err != nil {
+	t := template.Must(template.ParseFiles("templates/layout/default.html", "templates/view.html"))
+	if err := t.ExecuteTemplate(w, "default.html", getPostById(id)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
+
 func checkErr(err error) {
 	if err != nil {
 		panic(err)
