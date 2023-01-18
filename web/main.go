@@ -25,6 +25,7 @@ func main() {
 	r.PathPrefix("/js").Handler(http.StripPrefix("/js", http.FileServer(http.Dir("js/"))))
 	r.PathPrefix("/css").Handler(http.StripPrefix("/css", http.FileServer(http.Dir("css/"))))
 	r.HandleFunc("/", HomeHandler)
+	r.HandleFunc("/{id}/view", ViewHandler)
 
 	fmt.Println((http.ListenAndServe(":8080", r)))
 
@@ -47,6 +48,13 @@ func listPosts() []Post {
 	return items
 }
 
+func getPostById(id string) *Post {
+	row := db.QueryRow("SELECT * FROM posts WHERE id=?", id)
+	post := new(Post)
+	row.Scan(&post.Id, &post.Title, &post.Body, &post.Created)
+	return post
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("templates/index.html"))
 	if err := t.ExecuteTemplate(w, "index.html", listPosts()); err != nil {
@@ -54,6 +62,13 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func ViewHandler(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	t := template.Must(template.ParseFiles("templates/view.html"))
+	if err := t.ExecuteTemplate(w, "view.html", getPostById(id)); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
 func checkErr(err error) {
 	if err != nil {
 		panic(err)
