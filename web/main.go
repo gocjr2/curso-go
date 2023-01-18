@@ -1,9 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"html/template"
 	"net/http"
-	"text/template"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Post struct {
@@ -12,7 +15,15 @@ type Post struct {
 	Body  string
 }
 
+var db, err = sql.Open("mysql", "root:abc123456@tcp(localhost:3306)/cursogoweb?charset=utf8")
+
 func main() {
+
+	stmt, err := db.Prepare("INSERT INTO posts (title, body) VALUES (?,?);")
+	checkErr(err)
+
+	_, err = stmt.Exec("Post 2", "Content 2")
+	checkErr(err)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -29,4 +40,10 @@ func main() {
 	})
 
 	fmt.Println((http.ListenAndServe(":8080", nil)))
+}
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
