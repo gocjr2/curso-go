@@ -22,6 +22,8 @@ var db, err = sql.Open("mysql", "root:abc123456@tcp(localhost:3306)/cursogoweb?c
 func main() {
 
 	r := mux.NewRouter()
+	r.PathPrefix("/js").Handler(http.StripPrefix("/js", http.FileServer(http.Dir("js/"))))
+	r.PathPrefix("/css").Handler(http.StripPrefix("/css", http.FileServer(http.Dir("css/"))))
 	r.HandleFunc("/", HomeHandler)
 
 	fmt.Println((http.ListenAndServe(":8080", r)))
