@@ -19,12 +19,23 @@ var db, err = sql.Open("mysql", "root:abc123456@tcp(localhost:3306)/cursogoweb?c
 
 func main() {
 
-	stmt, err := db.Prepare("INSERT INTO posts (title, body) VALUES (?,?);")
+	rows, err := db.Query("SELECT * FROM posts")
 	checkErr(err)
 
-	_, err = stmt.Exec("Post 2", "Content 2")
-	checkErr(err)
+	items := []Post{}
 
+	for rows.Next() {
+		post := Post{}
+		rows.Scan(&post.Id, &post.Title, &post.Body)
+		items = append(items, post)
+	}
+
+	//stmt, err := db.Prepare("INSERT INTO posts (title, body) VALUES (?,?);")
+	//checkErr(err)
+
+	//_, err = stmt.Exec("Post 2", "Content 2")
+	//checkErr(err)
+	db.Close()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		post := Post{Id: 1, Title: "Unamed Post", Body: "No content"}
