@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
 )
 
 type Post struct {
@@ -20,6 +21,16 @@ var db, err = sql.Open("mysql", "root:abc123456@tcp(localhost:3306)/cursogoweb?c
 
 func main() {
 
+	r := mux.NewRouter()
+	r.HandleFunc("/", HomeHandler)
+
+	fmt.Println((http.ListenAndServe(":8080", r)))
+
+	db.Close()
+}
+
+func listPosts() []Post {
+
 	rows, err := db.Query("SELECT * FROM posts")
 	checkErr(err)
 
@@ -31,18 +42,14 @@ func main() {
 		items = append(items, post)
 	}
 
-	db.Close()
+	return items
+}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-
-		t := template.Must(template.ParseFiles("templates/index.html"))
-		if err := t.ExecuteTemplate(w, "index.html", items); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	})
-
-	fmt.Println((http.ListenAndServe(":8080", nil)))
-
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	t := template.Must(template.ParseFiles("templates/index.html"))
+	if err := t.ExecuteTemplate(w, "index.html", listPosts()); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func checkErr(err error) {
