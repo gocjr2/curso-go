@@ -1,0 +1,14 @@
+{{ define "context" }}
+
+<h1>{{.Title}}</h1>
+<a href="/">Voltar para home</a>
+<hr>
+<figure>
+    <blockquote class="blockquote">
+        <p>{{.Body}}</p>
+    </blockquote>
+    <figcaption class="blockquote-footer">
+        {{.Created}}
+    </figcaption>
+</figure>
+{{ end }}
